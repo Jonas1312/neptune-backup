@@ -56,8 +56,6 @@ def backup_experiment(exp, destination_dir):
     # Artifacts
     exp.download_artifacts(path=None, destination_dir=destination_dir)
 
-    pass
-
 
 def main():
     backup_directory = "BACKUP_FOLDER"
@@ -66,6 +64,8 @@ def main():
     backup_directory = Path(backup_directory)
     if not backup_directory.is_absolute():
         backup_directory = Path(".") / backup_directory
+
+    print("backup_directory: ", backup_directory)
 
     session = Session.with_default_backend()
     projects = session.get_projects(namespace)
