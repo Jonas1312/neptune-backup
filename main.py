@@ -47,6 +47,7 @@ def backup_experiment(exp, destination_dir):
 
     # Get log values
     df_logs = exp.get_numeric_channels_values(*channels)
+    df_logs.sort_index(axis=1, inplace=True)  # sort columns
     df_logs.to_csv(destination_dir / "logs.csv", index=False)
 
     # Source files
