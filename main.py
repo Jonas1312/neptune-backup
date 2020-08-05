@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -60,11 +61,9 @@ def backup_experiment(exp, destination_dir):
 def main():
     backup_directory = "BACKUP_FOLDER"
     namespace = ""  # Name of the workspace or username
+    overwrite_existing_experiment = False
 
     backup_directory = Path(backup_directory)
-    if not backup_directory.is_absolute():
-        backup_directory = Path(".") / backup_directory
-
     print("backup_directory: ", backup_directory)
 
     session = Session.with_default_backend()
@@ -80,8 +79,15 @@ def main():
         experiments = project.get_experiments()
         print(f"Found {len(experiments)} experiment(s):")
 
-        for exp in tqdm(reversed(experiments), total=len(experiments)):
+        for exp in tqdm(experiments, total=len(experiments)):
             exp_destination_dir = project_destination_dir / str(exp.id)
+            if (
+                not overwrite_existing_experiment
+                and exp_destination_dir.exists()
+                and len(os.listdir(exp_destination_dir)) > 0
+            ):
+                print("Skip: ", exp_destination_dir)
+                continue  # skip since already downloaded
             backup_experiment(exp, exp_destination_dir)
 
 
