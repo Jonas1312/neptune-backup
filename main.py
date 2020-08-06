@@ -75,6 +75,7 @@ def main():
 
         project_destination_dir = backup_directory / name
         project_destination_dir.mkdir(parents=True, exist_ok=True)
+        print("project_destination_dir: ", project_destination_dir)
 
         experiments = project.get_experiments()
         print(f"Found {len(experiments)} experiment(s):")
