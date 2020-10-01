@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
+from time import sleep
 
 import neptune
 from neptune.sessions import Session
@@ -80,16 +81,22 @@ def main():
         experiments = project.get_experiments()
         print(f"Found {len(experiments)} experiment(s):")
 
-        for exp in tqdm(experiments, total=len(experiments)):
+        pbar = tqdm(experiments, total=len(experiments))
+        for exp in pbar:
+            pbar.set_description(str(exp.id))
+            if exp.state == "running":
+                print(f"Skip {exp.id} (still running)")
+                continue
             exp_destination_dir = project_destination_dir / str(exp.id)
             if (
                 not overwrite_existing_experiment
                 and exp_destination_dir.exists()
                 and len(os.listdir(exp_destination_dir)) > 0
             ):
-                print("Skip: ", exp_destination_dir)
+                print(f"Skip {exp.id} (already exists)")
                 continue  # skip since already downloaded
             backup_experiment(exp, exp_destination_dir)
+            sleep(30)
 
 
 if __name__ == "__main__":
